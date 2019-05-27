@@ -1,5 +1,6 @@
 package com.br.im.bancario.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -15,8 +16,13 @@ import javax.persistence.Table;
 @Table(name="pessoa")
 @Inheritance
 @DiscriminatorColumn(name="Tipo")
-public class Pessoa {
+public class Pessoa implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 319104265601644831L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;

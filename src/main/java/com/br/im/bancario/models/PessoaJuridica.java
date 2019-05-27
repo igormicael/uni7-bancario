@@ -7,6 +7,11 @@ import javax.persistence.Entity;
 @DiscriminatorValue("J")
 public class PessoaJuridica extends Pessoa {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 79825978379315059L;
+	
 	private String cnpj;
 	
 	public PessoaJuridica() {

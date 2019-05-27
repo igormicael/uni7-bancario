@@ -7,6 +7,11 @@ import javax.persistence.Entity;
 @DiscriminatorValue("F")
 public class PessoaFisica extends Pessoa {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2389390586134534323L;
+
 	private String cpf;
 
 	public PessoaFisica() {
