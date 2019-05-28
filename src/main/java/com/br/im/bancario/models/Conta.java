@@ -112,7 +112,10 @@ public class Conta implements Serializable {
 	}
 
 	public void adicionarValor(Double valor) {
-		this.saldo += valor;
+		if(this.saldo == null)
+			this.saldo = valor;
+		else
+			this.saldo += valor;
 	}
 	
 	public void removerValor(Double valor) {
