@@ -1,5 +1,7 @@
 package com.br.im.bancario.models;
 
+import java.util.Date;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -17,6 +19,13 @@ public class PessoaFisica extends Pessoa {
 	public PessoaFisica() {
 		super();
 	}
+
+	public PessoaFisica(Long id, String nome, Date dataNascimento, String nomeMae, Boolean ativo, String cpf) {
+		super(id, nome, dataNascimento, nomeMae, ativo);
+		this.cpf = cpf;
+	}
+
+
 
 	public PessoaFisica(String cpf) {
 		super();

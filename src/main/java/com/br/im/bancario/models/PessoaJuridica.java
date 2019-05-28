@@ -1,5 +1,7 @@
 package com.br.im.bancario.models;
 
+import java.util.Date;
+
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -16,6 +18,11 @@ public class PessoaJuridica extends Pessoa {
 	
 	public PessoaJuridica() {
 		super();
+	}
+	
+	public PessoaJuridica(Long id, String nome, Date dataNascimento, String nomeMae, Boolean ativo, String cnpj) {
+		super(id, nome, dataNascimento, nomeMae, ativo);
+		this.cnpj = cnpj;
 	}
 
 	public String getCnpj() {

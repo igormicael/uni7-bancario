@@ -34,9 +34,8 @@ public class Movimentacao implements Serializable {
 	@JoinColumn(name = "conta_id", nullable = false, foreignKey=@ForeignKey(name="mov_conta_id"))
 	private Conta conta;
 	
-	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "conta_destino_id", nullable = false, foreignKey=@ForeignKey(name="mov_conta_destino_id"))
+	@JoinColumn(name = "conta_destino_id", foreignKey=@ForeignKey(name="mov_conta_destino_id"))
 	private Conta contaDestino;
 	
 	@Column
@@ -44,18 +43,23 @@ public class Movimentacao implements Serializable {
 	
 	@Enumerated(EnumType.STRING)
 	private EnumTipoMovimentacao tipoMovimentacao;
-
+	
+	@Column
+	private Double valor;
+	
 	public Movimentacao() {
 		super();
 
 	}
-
-	public Movimentacao(Long id, @NotNull Conta conta, Date data, EnumTipoMovimentacao tipoMovimentacao) {
+	
+	public Movimentacao( @NotNull Conta conta, @NotNull Conta contaDestino, Date data,
+			EnumTipoMovimentacao tipoMovimentacao, Double valor) {
 		super();
-		this.id = id;
 		this.conta = conta;
+		this.contaDestino = contaDestino;
 		this.data = data;
 		this.tipoMovimentacao = tipoMovimentacao;
+		this.valor = valor;
 	}
 
 	public Long getId() {
@@ -88,6 +92,22 @@ public class Movimentacao implements Serializable {
 
 	public void setTipoMovimentacao(EnumTipoMovimentacao tipoMovimentacao) {
 		this.tipoMovimentacao = tipoMovimentacao;
+	}
+
+	public Conta getContaDestino() {
+		return contaDestino;
+	}
+
+	public void setContaDestino(Conta contaDestino) {
+		this.contaDestino = contaDestino;
+	}
+
+	public Double getValor() {
+		return valor;
+	}
+
+	public void setValor(Double valor) {
+		this.valor = valor;
 	}
 	
 }

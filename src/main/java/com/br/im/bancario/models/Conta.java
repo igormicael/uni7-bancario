@@ -12,6 +12,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -45,6 +46,9 @@ public class Conta implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "agencia_id", nullable = false)
 	private Agencia agencia;
+	
+	@Version
+	private Integer versao;
 
 	public Conta() {
 		super();
@@ -98,5 +102,22 @@ public class Conta implements Serializable {
 	public void setSaldo(Double saldo) {
 		this.saldo = saldo;
 	}
+	
+	public Integer getVersao() {
+		return versao;
+	}
+
+	public void setVersao(Integer versao) {
+		this.versao = versao;
+	}
+
+	public void adicionarValor(Double valor) {
+		this.saldo += valor;
+	}
+	
+	public void removerValor(Double valor) {
+		this.saldo -= valor;
+	}
+
 	
 }

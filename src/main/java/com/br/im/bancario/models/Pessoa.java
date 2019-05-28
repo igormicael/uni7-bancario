@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name="pessoa")
 @Inheritance
 @DiscriminatorColumn(name="Tipo")
-public class Pessoa implements Serializable{
+public abstract class Pessoa implements Serializable{
 	
 	/**
 	 * 
