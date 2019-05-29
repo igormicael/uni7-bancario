@@ -39,9 +39,10 @@ public class CommandRunner implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		Conta contaIgor = criarContaCorrente(criarOuRecuperarAgencia(), criarPessoaJuridica());
+		Conta contaIgor = criarContaCorrente(criarOuRecuperarAgencia(), criarPessoaJuridica(), 666L);
 
-		Conta contaCleo = criarContaPoupanca(criarOuRecuperarAgencia(), criarPessoaFisica());
+//		Conta contaCleo = criarContaPoupanca(criarOuRecuperarAgencia(), criarPessoaFisica());
+		Conta contaCleo = criarContaCorrente(criarOuRecuperarAgencia(), criarPessoaFisica(), 999L);
 
 		realizarDeposito(contaIgor, 1000D);
 
@@ -103,26 +104,15 @@ public class CommandRunner implements CommandLineRunner {
 		return pessoaRepository.save(pessoa);
 	}
 
-	private Conta criarContaCorrente(Agencia agencia, Pessoa pessoa) {
+	private Conta criarContaCorrente(Agencia agencia, Pessoa pessoa, Long numeroConta) {
 
 		Conta conta = new ContaCorrente();
 		conta.setAgencia(agencia);
 		conta.setPessoa(pessoa);
-		conta.setNumero(666L);
+		conta.setNumero(numeroConta);
 
 		return contaRepository.save(conta);
 
-	}
-	
-	private Conta criarContaPoupanca(Agencia agencia, Pessoa pessoa) {
-		
-		Conta conta = new ContaPoupanca();
-		conta.setAgencia(agencia);
-		conta.setPessoa(pessoa);
-		conta.setNumero(999L);
-		
-		return contaRepository.save(conta);
-		
 	}
 
 	@Transactional(rollbackFor = RegraNegocioException.class)
@@ -169,6 +159,10 @@ public class CommandRunner implements CommandLineRunner {
 		
 		if (contaDestino == null) {
 			throw new RegraNegocioException("Conta de destino para transferencia presica ser informada.");
+		}
+		
+		if(contaOrigem instanceof ContaPoupanca || contaDestino instanceof ContaPoupanca) {
+			throw new RegraNegocioException("As duas contas precisam ser corrente para ser realizado a transferencia");
 		}
 		
 		contaOrigem = recuperarConta(contaOrigem);
