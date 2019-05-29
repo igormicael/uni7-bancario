@@ -5,6 +5,9 @@ import java.util.Date;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.hibernate.envers.Audited;
+
+@Audited
 @Entity
 @DiscriminatorValue("J")
 public class PessoaJuridica extends Pessoa {

@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.br.im.bancario.models.Agencia;
 import com.br.im.bancario.models.Conta;
+import com.br.im.bancario.models.ContaCorrente;
+import com.br.im.bancario.models.ContaPoupanca;
 import com.br.im.bancario.models.EnumTipoMovimentacao;
 import com.br.im.bancario.models.Movimentacao;
 import com.br.im.bancario.models.Pessoa;
@@ -38,15 +40,15 @@ public class CommandRunner implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		Conta contaIgor = criarContaCorrente(criarOuRecuperarAgencia(), criarPessoaJuridica());
-		
-		Conta contaCleo = criarContaCorrente(criarOuRecuperarAgencia(), criarPessoaFisica());
+
+		Conta contaCleo = criarContaPoupanca(criarOuRecuperarAgencia(), criarPessoaFisica());
 
 		realizarDeposito(contaIgor, 1000D);
 
 		realizarSaque(contaIgor, 100D);
-		
+
 		realizarDeposito(contaCleo, 10D);
-		
+
 		realizarTranferencia(contaIgor, contaCleo, 540D);
 
 	}
@@ -64,7 +66,7 @@ public class CommandRunner implements CommandLineRunner {
 		try {
 			contaIgorNubank = recuperarConta(contaIgorNubank);
 			criarMovimentacaoDeposito(contaIgorNubank, d);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -79,11 +81,11 @@ public class CommandRunner implements CommandLineRunner {
 		a.setNumero(123L);
 
 		Agencia agenciaSalva = agenciaRepository.findByNome(a.getNome()).orElse(null);
-		
-		if(agenciaSalva == null) {
+
+		if (agenciaSalva == null) {
 			return agenciaRepository.save(a);
 		}
-		
+
 		return agenciaSalva;
 	}
 
@@ -93,17 +95,17 @@ public class CommandRunner implements CommandLineRunner {
 
 		return pessoaRepository.save(pessoa);
 	}
-	
+
 	private Pessoa criarPessoaFisica() {
-		
+
 		Pessoa pessoa = new PessoaFisica(null, "Cleo", new Date(), "Lucia", Boolean.TRUE, "913.070.303-43");
-		
+
 		return pessoaRepository.save(pessoa);
 	}
 
 	private Conta criarContaCorrente(Agencia agencia, Pessoa pessoa) {
 
-		Conta conta = new Conta();
+		Conta conta = new ContaCorrente();
 		conta.setAgencia(agencia);
 		conta.setPessoa(pessoa);
 		conta.setNumero(666L);
@@ -111,46 +113,76 @@ public class CommandRunner implements CommandLineRunner {
 		return contaRepository.save(conta);
 
 	}
+	
+	private Conta criarContaPoupanca(Agencia agencia, Pessoa pessoa) {
+		
+		Conta conta = new ContaPoupanca();
+		conta.setAgencia(agencia);
+		conta.setPessoa(pessoa);
+		conta.setNumero(999L);
+		
+		return contaRepository.save(conta);
+		
+	}
 
 	@Transactional(rollbackFor = RegraNegocioException.class)
-	private Movimentacao criarMovimentacaoDeposito(Conta contaOrigem, Double valor) {
-
+	private Movimentacao criarMovimentacaoDeposito(Conta contaOrigem, Double valor) throws RegraNegocioException {
+		Movimentacao movimentacao = null;
+		
 		if (contaOrigem != null) {
-			Movimentacao movimentacao = new Movimentacao(contaOrigem, null, new Date(), EnumTipoMovimentacao.DEPOSITO, valor);
+			movimentacao = new Movimentacao(contaOrigem, null, new Date(), EnumTipoMovimentacao.DEPOSITO, valor);
+			movimentacao = movimentacaoRepository.save(movimentacao);
 			contaOrigem.adicionarValor(valor);
 
 			contaRepository.save(contaOrigem);
-			return movimentacaoRepository.save(movimentacao);
+			return movimentacao; 
 		}
 
-		return null;
+		throw new RegraNegocioException("Conta para deposito presica ser informada.");
 
 	}
 
 	@Transactional(rollbackFor = RegraNegocioException.class)
 	private Movimentacao criarMovimentacaoSaque(Conta contaOrigem, Double valor) throws RegraNegocioException {
-
-		contaOrigem = contaRepository.findById(contaOrigem.getId()).orElse(null);
-
+		Movimentacao movimentacao = null;
+		
 		if (contaOrigem != null) {
-			Movimentacao movimentacao = new Movimentacao(contaOrigem, null, new Date(), EnumTipoMovimentacao.SAQUE,
-					valor);
-			if (contaOrigem.getSaldo() - valor > 0) {
-				contaOrigem.removerValor(valor);
-				contaRepository.save(contaOrigem);
-			} else {
-				throw new RegraNegocioException("Não há saldo suficiente para essa operação.");
-			}
-			return movimentacaoRepository.save(movimentacao);
-		}
+			movimentacao = new Movimentacao(contaOrigem, null, new Date(), EnumTipoMovimentacao.SAQUE, valor);
+			movimentacao = movimentacaoRepository.save(movimentacao);
 
-		return null;
+			contaOrigem.removerValor(valor);
+			contaRepository.save(contaOrigem);
+			
+			return movimentacao;
+		}
+		throw new RegraNegocioException("Conta para saque presica ser informada.");
 
 	}
-	
+
 	@Transactional(rollbackFor = RegraNegocioException.class)
-	private void realizarTranferencia(Conta contaIgor, Conta contaCleo, double d) {
+	private void realizarTranferencia(Conta contaOrigem, Conta contaDestino, double valorTransferencia)
+			throws RegraNegocioException {
+
+		if (contaOrigem == null) {
+			throw new RegraNegocioException("Conta de origem para transferencia presica ser informada.");
+		}
 		
+		if (contaDestino == null) {
+			throw new RegraNegocioException("Conta de destino para transferencia presica ser informada.");
+		}
+		
+		contaOrigem = recuperarConta(contaOrigem);
+		contaDestino = recuperarConta(contaDestino);
+		
+		Movimentacao movimentacao = new Movimentacao(contaOrigem, contaDestino, new Date(), EnumTipoMovimentacao.TRANSFERENCIA, valorTransferencia);
+		movimentacao = movimentacaoRepository.save(movimentacao);
+		
+		contaOrigem.removerValor(valorTransferencia);
+		contaDestino.adicionarValor(valorTransferencia);
+		
+		contaRepository.save(contaOrigem);
+		contaRepository.save(contaDestino);
+
 	}
 
 }

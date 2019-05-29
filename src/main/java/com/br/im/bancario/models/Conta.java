@@ -15,6 +15,11 @@ import javax.persistence.Table;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.envers.Audited;
+
+import com.br.im.bancario.utils.RegraNegocioException;
+
+@Audited
 @Entity
 @Table(name = "conta")
 @Inheritance
@@ -118,8 +123,16 @@ public class Conta implements Serializable {
 			this.saldo += valor;
 	}
 	
-	public void removerValor(Double valor) {
-		this.saldo -= valor;
+	public void removerValor(Double valor) throws RegraNegocioException {
+		if(this.saldo == null) {
+			throw new RegraNegocioException("Não há saldo suficiente para essa operação.");
+		}else {
+			if( this.saldo - valor > 0 ) {
+				this.saldo -= valor;
+			}else {
+				throw new RegraNegocioException("Não há saldo suficiente para essa operação.");
+			}
+		}
 	}
 
 	

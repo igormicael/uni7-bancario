@@ -12,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.envers.Audited;
+
+@Audited
 @Entity
 @Table(name="agencia")
 public class Agencia implements Serializable {

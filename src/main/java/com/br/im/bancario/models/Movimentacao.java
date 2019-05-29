@@ -16,6 +16,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.envers.Audited;
+
+@Audited
 @Entity
 @Table(name="movimentacao")
 public class Movimentacao implements Serializable {
