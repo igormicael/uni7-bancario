@@ -19,7 +19,7 @@ import org.hibernate.envers.Audited;
 @Table(name="pessoa")
 @Inheritance
 @DiscriminatorColumn(name="Tipo")
-public abstract class Pessoa implements Serializable{
+public class Pessoa implements Serializable{
 	
 	/**
 	 * 
@@ -86,6 +86,11 @@ public abstract class Pessoa implements Serializable{
 
 	public void setAtivo(Boolean ativo) {
 		this.ativo = ativo;
+	}
+
+	@Override
+	public String toString() {
+		return "Pessoa [nome=" + nome + ", dataNascimento=" + dataNascimento + "]";
 	}
 
 }

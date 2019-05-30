@@ -135,5 +135,9 @@ public class Conta implements Serializable {
 		}
 	}
 
+	@Override
+	public String toString() {
+		return "Conta [numero=" + numero + ", saldo=" + saldo + ", pessoa=" + pessoa + ", agencia=" + agencia + "]";
+	}
 	
 }

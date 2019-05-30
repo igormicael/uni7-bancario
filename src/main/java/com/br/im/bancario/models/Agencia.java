@@ -81,4 +81,10 @@ public class Agencia implements Serializable {
 	public void setContas(List<Conta> contas) {
 		this.contas = contas;
 	}
+
+	@Override
+	public String toString() {
+		return "Agencia [nome=" + nome + ", numero=" + numero + "]";
+	}
+	
 }

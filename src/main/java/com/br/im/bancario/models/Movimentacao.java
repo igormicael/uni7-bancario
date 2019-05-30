@@ -112,5 +112,11 @@ public class Movimentacao implements Serializable {
 	public void setValor(Double valor) {
 		this.valor = valor;
 	}
+
+	@Override
+	public String toString() {
+		return "Movimentacao [id=" + id + ", conta=" + conta + ", contaDestino=" + contaDestino + ", data=" + data
+				+ ", tipoMovimentacao=" + tipoMovimentacao + ", valor=" + valor + "]";
+	}
 	
 }

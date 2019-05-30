@@ -1,5 +1,7 @@
 package com.br.im.bancario.utils;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,6 @@ public class CommandRunner implements CommandLineRunner {
 
 		Conta contaIgor = criarContaCorrente(criarOuRecuperarAgencia(), criarPessoaJuridica(), 666L);
 
-//		Conta contaCleo = criarContaPoupanca(criarOuRecuperarAgencia(), criarPessoaFisica());
 		Conta contaCleo = criarContaCorrente(criarOuRecuperarAgencia(), criarPessoaFisica(), 999L);
 
 		realizarDeposito(contaIgor, 1000D);
@@ -51,6 +52,38 @@ public class CommandRunner implements CommandLineRunner {
 		realizarDeposito(contaCleo, 10D);
 
 		realizarTranferencia(contaIgor, contaCleo, 540D);
+		
+		System.out.println("-----------");
+		System.out.println("----- Movimentações por periodo ------");
+		System.out.println("-----------");
+		
+		LocalDate ontem = LocalDate.now().minusDays(1);
+		LocalDate amanha = LocalDate.now().plusDays(1);
+		
+		Date dateOntem = Date.from(ontem.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		Date dateAmanha = Date.from(amanha.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		
+		System.out.println(movimentacaoRepository.findByDataBetween(dateOntem, dateAmanha ));
+		
+		System.out.println("-----------");
+		System.out.println("----- Movimentações por agencia ------");
+		System.out.println("-----------");
+		
+		System.out.println(movimentacaoRepository.findByContaAgenciaId(contaIgor.getAgencia().getId()));
+		
+		System.out.println("-----------");
+		System.out.println("----- Movimentações por cliente Igor ------");
+		System.out.println("-----------");
+		
+		System.out.println(movimentacaoRepository.findByContaPessoaId(contaIgor.getPessoa().getId()));
+		
+		System.out.println("-----------");
+		System.out.println("----- Movimentações por cliente Cleo ------");
+		System.out.println("-----------");
+		
+		System.out.println(movimentacaoRepository.findByContaPessoaId(contaCleo.getPessoa().getId()));
+		
+		System.out.println("-----------");
 
 	}
 
